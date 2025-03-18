@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Meal Planner - Vegetarian</title>
+    <script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f9ff;
+        }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        .meal-card {
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-center mb-8 text-teal-600">AI Vegetarian Meal Planner</h1>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            <!-- Breakfast Card -->
+            <div class="meal-card rounded-lg p-6 shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 text-teal-700"><i class="bi bi-sunrise"></i> Breakfast</h2>
+                <div id="breakfast-recommendation" class="space-y-2">
+                    <p class="text-gray-700">Loading...</p>
+                </div>
+            </div>
+
+            <!-- Lunch Card -->
+            <div class="meal-card rounded-lg p-6 shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 text-teal-700"><i class="bi bi-sun"></i> Lunch</h2>
+                <div id="lunch-recommendation" class="space-y-2">
+                    <p class="text-gray-700">Loading...</p>
+                </div>
+            </div>
+
+            <!-- Dinner Card -->
+            <div class="meal-card rounded-lg p-6 shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 text-teal-700"><i class="bi bi-moon"></i> Dinner</h2>
+                <div id="dinner-recommendation" class="space-y-2">
+                    <p class="text-gray-700">Loading...</p>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="generateMeals()" class="mt-8 mx-auto block bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 transition-colors">
+            Generate New Meals <i class="bi bi-arrow-repeat"></i>
+        </button>
+    </div>
+
+    <script>
+        // Three.js Background
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
+        const material = new THREE.MeshBasicMaterial({ color: 0x0ea5e9, wireframe: true });
+        const torusKnot = new THREE.Mesh(geometry, material);
+        scene.add(torusKnot);
+
+        camera.position.z = 30;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            torusKnot.rotation.x += 0.01;
+            torusKnot.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Responsive Three.js
+        window.addEventListener('resize', onWindowResize, false);
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Meal Generation Logic
+        const breakfastOptions = [
+            { name: "Masala Dosa with Coconut Chutney", calories: "350" },
+            { name: "Poha with Mixed Vegetables", calories: "280" },
+            { name: "Vegetable Upma", calories: "300" },
+            { name: "Aloo Paratha with Yogurt", calories: "400" },
+            { name: "Idli Sambar", calories: "250" }
+        ];
+
+        const lunchOptions = [
+            { name: "Dal Tadka with Rice and Roti", calories: "450" },
+            { name: "Paneer Butter Masala with Naan", calories: "550" },
+            { name: "Mixed Vegetable Curry with Rice", calories: "400" },
+            { name: "Chole Bhature", calories: "600" },
+            { name: "Vegetable Biryani", calories: "480" }
+        ];
+
+        const dinnerOptions = [
+            { name: "Palak Paneer with Roti", calories: "400" },
+            { name: "Mixed Dal with Rice", calories: "350" },
+            { name: "Vegetable Khichdi", calories: "300" },
+            { name: "Malai Kofta with Naan", calories: "500" },
+            { name: "Mushroom Masala with Jeera Rice", calories: "420" }
+        ];
+
+        function getRandomMeal(options) {
+            return options[Math.floor(Math.random() * options.length)];
+        }
+
+        function generateMealHTML(meal) {
+            return `
+                <p class="font-medium text-teal-800">${meal.name}</p>
+                <p class="text-sm text-gray-600">Calories: ${meal.calories}</p>
+            `;
+        }
+
+        function generateMeals() {
+            const breakfast = getRandomMeal(breakfastOptions);
+            const lunch = getRandomMeal(lunchOptions);
+            const dinner = getRandomMeal(dinnerOptions);
+
+            document.getElementById('breakfast-recommendation').innerHTML = generateMealHTML(breakfast);
+            document.getElementById('lunch-recommendation').innerHTML = generateMealHTML(lunch);
+            document.getElementById('dinner-recommendation').innerHTML = generateMealHTML(dinner);
+        }
+
+        // Initial meal generation
+        generateMeals();
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
